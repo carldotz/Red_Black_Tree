@@ -3,12 +3,13 @@ CC=g++
 CXXFLAGS= -g 
 LDFLAGS= -g
 
-RBTree:main.cc rbtree.h rbtreeNode.h
-	$(CC) $(CXXFLAGS) -o RBTree main.cc
+RBT:main.cc rbt.h rbt_node.h color.h
+	$(CC) $(CXXFLAGS) -o RBT main.cc
 
 .PHONY:clean
 
 clean:
 	@rm -f *.o
-	@rm -f RBTree
+	@rm -f RBT
+	@rm -fr RBT.dSYM
 
