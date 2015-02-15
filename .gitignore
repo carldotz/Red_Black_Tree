@@ -26,3 +26,10 @@
 *.exe
 *.out
 *.app
+RBT
+
+# DSYM
+*.dSYM
+
+# Swp
+*.swp

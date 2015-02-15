@@ -2,7 +2,10 @@
 #define _RBT_H 
 
 #include <iostream>
+#include <list>
+#include "color.h"
 #include "rbt_node.h"
+#include "display_info.h"
 
 template <typename T>
 class RBT {
@@ -36,7 +39,7 @@ class RBT {
 		void inorder(std::ostream& out) const;
 		void preorder(std::ostream& out) const;
 		void postorder(std::ostream& out) const;
-
+		void display() const;
 };
 
 template <typename T>
@@ -61,7 +64,7 @@ void RBT<T>::inorder(RBT_Node<T> *root, std::ostream& out) const {
 		if(root->l) {
 			inorder(root->l, out);
 		}
-		out << (root->key) << "," << (root->data) << "\t";
+		out << (root->key) << "[" << (root->data) << "," << (root->color) << "]\t";
 		if(root->r) {
 			inorder(root->r, out);
 		}	
@@ -73,7 +76,7 @@ void RBT<T>::inorder(RBT_Node<T> *root, std::ostream& out) const {
 template <typename T>
 void RBT<T>::preorder(RBT_Node<T> *root, std::ostream& out) const {
 	if(root) {
-		out << (root->key) << "," << (root->data) << "\t";
+		out << (root->key) << "[" << (root->data) << "," << (root->color) << "]\t";
 		if(root->l) {
 			preorder(root->l, out);
 		}
@@ -94,7 +97,7 @@ void RBT<T>::postorder(RBT_Node<T> *root, std::ostream& out) const {
 		if(root->r) {
 			postorder(root->r, out);
 		}
-		out << (root->key) << "," << (root->data) << "\t";
+		out << (root->key) << "[" << (root->data) << "," << (root->color) << "]\t";
 	} else {
 		out << "Empty" << std::endl;
 	}
@@ -162,6 +165,7 @@ bool RBT<T>::insert(long key, T data) {
 	}
 	c->p = p;
 	c->data = data;
+	c->color = Red;
 	c->key = key;
 	c->r = NULL;
 	c->l = NULL;
@@ -248,5 +252,73 @@ std::ostream& operator<<(std::ostream &out, const RBT<T> & rbt) {
 	rbt.inorder(out);
 	return out;
 } 
+
+template <typename T>
+void RBT<T>::display() const {
+	int i;
+	std::list<RBT_Node<T> *> q;
+	std::list<Display_Info> qi;
+	int screen_Width = 180;
+	int data_Width = 2;
+	Display_Info info;    
+	Display_Info preinfo; 
+	RBT_Node<T> *curnode;       
+	Display_Info curinfo; 
+	if(!root) {
+		std::cout << "Empty" << std::endl;
+		return;
+	}
+	q.push_back(root);
+	info.level = 1;
+	info.enter = true;
+	info.spaceNum = screen_Width >> info.level;
+	info.pos = info.spaceNum;
+	qi.push_back(info);
+	preinfo = info;
+	while(q.size()) {
+		curnode = q.front();
+		q.pop_front();
+		curinfo = qi.front();
+		if(curinfo.enter) 
+		  std::cout << "\n\n";
+		for(i=0;i<curinfo.spaceNum;i++)
+		  std::cout << " ";
+		std::cout << curnode->key;
+		qi.pop_front();
+		if(curnode->l) {
+			q.push_back(curnode->l);
+			info.level = curinfo.level + 1;
+			info.pos = curinfo.pos - (screen_Width >> info.level);
+			if(info.level > preinfo.level) {
+				info.enter = true;
+				info.spaceNum = info.pos;
+			} else {
+				info.enter = false;
+				info.spaceNum = info.pos - preinfo.pos;
+			}
+			info.spaceNum -= data_Width;
+			qi.push_back(info);
+			preinfo = info;
+
+		}
+		if(curnode -> r) {
+			q.push_back(curnode -> r);
+			info.level = curinfo.level + 1;
+			info.pos = curinfo.pos + (screen_Width >> info.level);
+			if(info.level > preinfo.level) {
+				info.enter = true;
+				info.spaceNum = info.pos;
+			} else {
+				info.enter = false;
+				info.spaceNum = info.pos - preinfo.pos;
+			}
+			info.spaceNum -= data_Width;
+			qi.push_back(info);
+			preinfo = info;
+		}
+
+	}
+	std::cout << std::endl;
+}
 
 #endif

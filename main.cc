@@ -11,10 +11,10 @@ int main() {
 	cout << "**********0********" << endl;
 	cout << rbt << endl;
 	cout << "**********1********" << endl;
-	rbt.insert(90,300);
+	rbt.insert(70,300);
 	cout << rbt << endl;
 	cout << "**********2********" << endl;
-	for(int i=0;i<100;++i) 
+	for(int i=0;i<10;++i) 
 		rbt.insert(random()%100, random()%100);
 	cout << rbt << endl;
 	cout << "********search*****" << endl;
@@ -29,5 +29,7 @@ int main() {
 	rbt.remove(5);
 	rbt.remove(90);
 	cout << rbt << endl;
+	cout << "******display********" << endl;
+	rbt.display();
 	return 0;
 }
