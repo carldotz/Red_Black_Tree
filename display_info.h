@@ -5,7 +5,7 @@ struct Display_Info {
 	int level;
 	int pos;
 	bool enter;
-	int spaceNum;
+	int space_num;
 };
 
 #endif
