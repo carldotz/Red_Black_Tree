@@ -25,11 +25,23 @@ int main() {
 //	cout << rbt.min().data << endl;
 	cout << "******display********" << endl;
 	rbt.display();
+	cout << "******insert0********" << endl;
+	rbt.insert(70,300);
+	rbt.display();
+	cout << "******insert1********" << endl;
+	for(int i=0;i<20;++i) { 
+		rbt.insert(random()%100, random()%100);
+		rbt.display();
+		cout << "******insert" << i << "********" << endl;
+	}
+	rbt.display();
+	cout << "******display********" << endl;
+	rbt.display();
 	cout << "******remove********" << endl;
-	rbt.remove(2);
-	rbt.remove(3);
-	rbt.remove(77);
-	rbt.remove(90);
+//	rbt.remove(2);
+//	rbt.remove(3);
+//	rbt.remove(77);
+//	rbt.remove(90);
 	cout << rbt << endl;
 	cout << "******display********" << endl;
 	rbt.display();

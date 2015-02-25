@@ -51,6 +51,87 @@ class RBT {
 		void display() const;
 };
 
+
+template <typename T>
+void RBT<T>::left_rotate(RBT_Node<T> *z) {
+	RBT_Node<T> *y = z->r;
+	z->r = y->l;
+	if(y->l != nil_node) {
+		y->l->p = z;
+	}
+	y->p = z->p;
+	if(z->p == nil_node) {
+		root = y;
+	} else if(z->p->l == z) {
+		z->p->l = y;
+	} else if(z->p->r == z) {
+		z->p->r = y;
+	}
+	y->l = z;
+	z->p = y;
+}
+
+template <typename T>
+void RBT<T>::right_rotate(RBT_Node<T> *z) {
+	RBT_Node<T> *y = z->l;
+	z->l = y->r;
+	if(y->r != nil_node) {
+		y->r->p = z;
+	}
+	y->p = z->p;
+	if(z->p == nil_node) {
+		root = y;
+	} else if(z->p->l == z) {
+		z->p->l = y;
+	} else if(z->p->r == z) {
+		z->p->r = y;
+	}
+	y->r = z;
+	z->p = y;
+}
+
+
+template <typename T>
+void RBT<T>::insert_fixup(RBT_Node<T> *z) {
+	RBT_Node<T> *y;
+	while(z->p->color == Red) {
+		if(z->p == z->p->p->l) {
+			y = z->p->p->r;
+			if(y->color == Red) {
+				z->p->color = Black;
+				y->color = Black;
+				z->p->p->color = Red;
+				z = z->p->p;
+			} else {
+				if(z == z->p->r) {
+					z = z->p;
+					left_rotate(z);
+				}
+				z->p->color = Black;
+				z->p->p->color = Red;
+				right_rotate(z->p->p);
+			}
+		} else {
+			y = z->p->p->l;
+			if(y->color == Red) {
+				z->p->color = Black;
+				y->color = Black;
+				z->p->p->color = Red;
+				z = z->p->p;
+			} else {
+				if(z == z->p->l) {
+					z = z->p;
+					right_rotate(z);
+				}
+				z->p->color = Black;
+				z->p->p->color = Red;
+				left_rotate(z->p->p);
+			}
+		}
+	}
+	root->color = Black;
+}
+
 template <typename T>
 bool RBT<T>::transplant(RBT_Node<T> *u, RBT_Node<T> *v) {
 	if(!u->p) {
@@ -146,8 +227,8 @@ bool RBT<T>::insert(long key, T data) {
 	RBT_Node<T> *p = root; 
 	RBT_Node<T> *c = root;
 	bool left = false;
-	if(root) {
-		while(c != NULL) {
+	if(root != nil_node) {
+		while(c != nil_node) {
 			p = c;
 			if(c->key == key) {
 				c->data = data;
@@ -160,7 +241,6 @@ bool RBT<T>::insert(long key, T data) {
 				left = true;
 			}
 		}
-
 		if(left) {
 			p->l = new RBT_Node<T>;
 			c = p->l;
@@ -168,19 +248,20 @@ bool RBT<T>::insert(long key, T data) {
 			p->r = new RBT_Node<T>;
 			c = p->r;
 		}
-
+		c->color = Red;
 	} else {
 		root = new RBT_Node<T>;
 		c = root;
+		c->color = Black;
+		c->p = nil_node;
 	}
 	c->p = p;
 	c->data = data;
-	c->color = Red;
 	c->key = key;
-	c->r = NULL;
-	c->l = NULL;
+	c->r = nil_node;
+	c->l = nil_node;
 	c->valid = true;
-
+	insert_fixup(c);
 	return true;
 }
 
