@@ -25,6 +25,7 @@ class RBT {
 		void left_rotate(RBT_Node<T> *z);
 		void right_rotate(RBT_Node<T> *z);
 		void insert_fixup(RBT_Node<T> *z);
+		void remove_fixup(RBT_Node<T> *z);
 
 	public:
 		RBT() {
@@ -133,18 +134,72 @@ void RBT<T>::insert_fixup(RBT_Node<T> *z) {
 }
 
 template <typename T>
+void RBT<T>::remove_fixup(RBT_Node<T> *x) {
+	RBT_Node<T> *w;
+	while(x != root && x->color == Black) {
+		if(x == x->p->l) {
+			w = x->p->r;
+			if(w->color == Red) {
+				w->color = Black;
+				x->p->color = Red;
+				left_rotate(x->p);
+				w = x->p->r;
+			}
+			if(w->l->color == Black && w->r->color == Black) {
+				w->color = Red;
+				x = x->p;
+			} else {
+				if(w->r->color == Black) {
+					w->l->color = Black;
+					w->color = Red;
+					right_rotate(w);
+					w = x->p->r;
+				}
+				w->color = x->p->color;
+				x->p->color = Black;
+				w->r->color = Black;
+				left_rotate(x->p);
+				x = root;
+			}
+		} else {
+			w = x->p->l;
+			if(w->color == Red) {
+				w->color = Black;
+				x->p->color = Red;
+				right_rotate(x->p);
+				w = x->p->l;
+			}
+			if(w->r->color == Black && w->l->color == Black) {
+				w->color = Red;
+				x = x->p;
+			} else {
+				if(w->l->color == Black) {
+					w->r->color = Black;
+					w->color = Red;
+					left_rotate(w);
+					w = x->p->l;
+				}
+				w->color = x->p->color;
+				x->p->color = Black;
+				w->l->color = Black;
+				right_rotate(x->p);
+				x = root;
+			}
+		}
+	}
+	x->color = Black;
+}
+
+template <typename T>
 bool RBT<T>::transplant(RBT_Node<T> *u, RBT_Node<T> *v) {
-	if(!u->p) {
+	if(u->p == nil_node) {
 		root = v;
 	} else if(u == u->p->l) {
 		u->p->l = v;
 	} else if(u == u->p->r) {
 		u->p->r = v;
 	}
-	if(v) {
-		v->p = u->p;
-	}
-
+	v->p = u->p;
 	return true;
 }
 
@@ -269,22 +324,34 @@ template <typename T>
 bool RBT<T>::remove(long key) { 
 	if(root == nil_node) return false;
 	RBT_Node<T> *z = &(search(key));
-	RBT_Node<T> *y = NULL;
+	RBT_Node<T> *y = z;
+	RBT_Node<T> *x = NULL;
+	Color original_color = y->color;
 	if(!z->valid) return false;
-	if(!z->l) {
+	if(z->l == nil_node) {
+		x = z->r;
 		transplant(z,z->r);
-	} else if(!z->r) {
+	} else if(z->r == nil_node) {
+		x = z->l;
 		transplant(z,z->l);
 	} else {
 		y = &min(z->r);
+		original_color = y->color;
+		x = y->r;
 		if(y->p != z) {
 			transplant(y, y->r);
 			y->r = z->r;
 			y->r->p = y;
+		} else {
+			x->p = y;
 		}
 		transplant(z, y);
 		y->l = z->l;
 		y->l->p = y;
+		y->color = z->color;
+	}
+	if(original_color == Black) {
+		remove_fixup(x);
 	}
 	delete z;
 	return true;

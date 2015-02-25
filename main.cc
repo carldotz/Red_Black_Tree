@@ -38,10 +38,11 @@ int main() {
 	cout << "******display********" << endl;
 	rbt.display();
 	cout << "******remove********" << endl;
-//	rbt.remove(2);
-//	rbt.remove(3);
-//	rbt.remove(77);
-//	rbt.remove(90);
+	rbt.remove(77);
+	rbt.remove(70);
+	rbt.remove(90);
+	rbt.remove(80);
+	rbt.remove(93);
 	cout << rbt << endl;
 	cout << "******display********" << endl;
 	rbt.display();
